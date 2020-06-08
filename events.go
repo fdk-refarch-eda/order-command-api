@@ -1,6 +1,4 @@
-package events
-
-import "github.com/fdk-refarch-eda/order-service/order-command-service/domain"
+package main
 
 // CreateOrderCommand event
 type CreateOrderCommand struct {
@@ -20,9 +18,9 @@ type OrderEventPayload struct {
 	ProductID            string
 	CustomerID           string
 	Quantity             int
-	PickupAddress        domain.Address
+	PickupAddress        Address
 	PickupDate           string
-	DestinationAddress   domain.Address
+	DestinationAddress   Address
 	ExpectedDeliveryDate string
 	Status               string
 }

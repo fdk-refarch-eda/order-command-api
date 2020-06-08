@@ -1,4 +1,4 @@
-package domain
+package main
 
 // Address model
 type Address struct {

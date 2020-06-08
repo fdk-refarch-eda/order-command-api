@@ -6,15 +6,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure"
-	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/events"
 	"github.com/gorilla/mux"
 )
 
-var orderCommandProducer *infrastructure.OrderCommandProducer = initOrderCommandProducer()
+var orderCommandProducer *OrderCommandProducer = initOrderCommandProducer()
 
-func initOrderCommandProducer() *infrastructure.OrderCommandProducer {
-	ocp, err := infrastructure.NewOrderCommandProducer()
+func initOrderCommandProducer() *OrderCommandProducer {
+	ocp, err := NewOrderCommandProducer()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,9 +22,9 @@ func initOrderCommandProducer() *infrastructure.OrderCommandProducer {
 // CreateOrder Handler
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	log.Println("CreateOrder Handler triggered...")
-	orderCommandProducer.Emit(events.CreateOrderCommand{
+	orderCommandProducer.Emit(CreateOrderCommand{
 		TimestampInMillis: time.Now().UnixNano() / int64(time.Millisecond),
-		Payload: events.OrderEventPayload{
+		Payload: OrderEventPayload{
 			OrderID:    "1",
 			ProductID:  "123",
 			CustomerID: "456",
@@ -38,9 +36,9 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 func UpdateOrder(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	log.Println(fmt.Sprintf("UpdateOrder Handler for id=%v triggered...", id))
-	orderCommandProducer.Emit(events.UpdateOrderCommand{
+	orderCommandProducer.Emit(UpdateOrderCommand{
 		TimestampInMillis: time.Now().UnixNano() / int64(time.Millisecond),
-		Payload: events.OrderEventPayload{
+		Payload: OrderEventPayload{
 			OrderID:    id,
 			ProductID:  "123",
 			CustomerID: "456",
