@@ -13,18 +13,16 @@ type OrderCommandProducer struct {
 }
 
 // NewOrderCommandProducer ctor
-func NewOrderCommandProducer() (*OrderCommandProducer, error) {
+func NewOrderCommandProducer() *OrderCommandProducer {
 	delegate, err := kafka.NewProducer(&kafka.ConfigMap{})
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	p := &OrderCommandProducer{
+	return &OrderCommandProducer{
 		producer: delegate,
 	}
-
-	return p, nil
 }
 
 // Emit func

@@ -9,15 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var orderCommandProducer *OrderCommandProducer = initOrderCommandProducer()
-
-func initOrderCommandProducer() *OrderCommandProducer {
-	ocp, err := NewOrderCommandProducer()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return ocp
-}
+var orderCommandProducer *OrderCommandProducer = NewOrderCommandProducer()
 
 // CreateOrder Handler
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
