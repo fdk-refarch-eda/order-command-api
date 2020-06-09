@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: "Order-Command API"
+  version: "1.0.0"
+paths:
+  /orders:
+    post:
+      summary: "Creates a new order"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        "201":
+          description: "Created"
+
+
+components:
+  schemas:
+    Order:
+      properties:
+        quantity:
+          type: integer
