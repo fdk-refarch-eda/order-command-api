@@ -6,5 +6,5 @@ type Address struct {
 	City    string
 	Country string
 	State   string
-	Zipcode string
+	ZipCode string
 }

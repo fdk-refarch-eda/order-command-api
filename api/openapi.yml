@@ -29,7 +29,7 @@ components:
           type: string
         street:
           type: string
-        zipcode:
+        zipCode:
           type: string
       type: object
     OrderRequest:

@@ -6,7 +6,7 @@
     {
       "label": "run-order-command-service",
       "type": "shell",
-      "command": "go run ."
+      "command": "$HOME/go/bin/air"
     }
   ]
 }

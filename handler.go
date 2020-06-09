@@ -7,12 +7,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
-// OrderRequest model
+// CreateOrderRequest model
 // swagger:model
-type OrderRequest struct {
+type CreateOrderRequest struct {
 	CustomerID           string
 	ProductID            string
 	Quantity             int
@@ -26,16 +27,13 @@ var orderCommandProducer *OrderCommandProducer = NewOrderCommandProducer()
 
 // CreateOrder Handler
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
-	var orderRequest OrderRequest
-	json.NewDecoder(r.Body).Decode(&orderRequest)
-	log.Println(fmt.Sprintf("CreateOrder Handler triggered with (%+v) ...", orderRequest))
+	var createOrderRequest CreateOrderRequest
+	json.NewDecoder(r.Body).Decode(&createOrderRequest)
+	log.Println(fmt.Sprintf("CreateOrder Handler triggered with (%+v) ...", createOrderRequest))
+
 	orderCommandProducer.Emit(CreateOrderCommand{
 		TimestampInMillis: time.Now().UnixNano() / int64(time.Millisecond),
-		Payload: OrderEventPayload{
-			OrderID:    "1",
-			ProductID:  "123",
-			CustomerID: "456",
-		},
+		Payload:           toEventPayload(createOrderRequest),
 	})
 }
 
@@ -43,6 +41,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 func UpdateOrder(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	log.Println(fmt.Sprintf("UpdateOrder Handler for id=%v triggered...", id))
+
 	orderCommandProducer.Emit(UpdateOrderCommand{
 		TimestampInMillis: time.Now().UnixNano() / int64(time.Millisecond),
 		Payload: OrderEventPayload{
@@ -51,4 +50,18 @@ func UpdateOrder(w http.ResponseWriter, r *http.Request) {
 			CustomerID: "456",
 		},
 	})
+}
+
+func toEventPayload(createOrderRequest CreateOrderRequest) OrderEventPayload {
+	return OrderEventPayload{
+		OrderID:              uuid.New().String(),
+		ProductID:            createOrderRequest.ProductID,
+		CustomerID:           createOrderRequest.CustomerID,
+		Quantity:             createOrderRequest.Quantity,
+		PickupAddress:        createOrderRequest.PickupAddress,
+		PickupDate:           createOrderRequest.PickupDate,
+		DestinationAddress:   createOrderRequest.DestinationAddress,
+		ExpectedDeliveryDate: createOrderRequest.ExpectedDeliveryDate,
+		Status:               "to-be-created",
+	}
 }
