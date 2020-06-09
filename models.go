@@ -2,9 +2,9 @@ package main
 
 // Address model
 type Address struct {
-	street  string
-	city    string
-	country string
-	state   string
-	zipcode string
+	Street  string
+	City    string
+	Country string
+	State   string
+	Zipcode string
 }

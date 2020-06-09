@@ -11,15 +11,43 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/components/schemas/OrderRequest'
       responses:
         "201":
           description: "Created"
 
-
 components:
   schemas:
-    Order:
+    Address:
+      description: Address model
       properties:
+        city:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        street:
+          type: string
+        zipcode:
+          type: string
+      type: object
+    OrderRequest:
+      description: OrderRequest model
+      properties:
+        customerID:
+          type: string
+        destinationAddress:
+          $ref: '#/components/schemas/Address'
+        expectedDeliveryDate:
+          type: string
+        pickupAddress:
+          $ref: '#/components/schemas/Address'
+        pickupDate:
+          type: string
+        productID:
+          type: string
         quantity:
+          format: int64
           type: integer
+      type: object

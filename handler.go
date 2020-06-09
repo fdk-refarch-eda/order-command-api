@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,11 +10,25 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// OrderRequest model
+// swagger:model
+type OrderRequest struct {
+	CustomerID           string
+	ProductID            string
+	Quantity             int
+	ExpectedDeliveryDate string
+	PickupDate           string
+	PickupAddress        Address
+	DestinationAddress   Address
+}
+
 var orderCommandProducer *OrderCommandProducer = NewOrderCommandProducer()
 
 // CreateOrder Handler
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
-	log.Println("CreateOrder Handler triggered...")
+	var orderRequest OrderRequest
+	json.NewDecoder(r.Body).Decode(&orderRequest)
+	log.Println(fmt.Sprintf("CreateOrder Handler triggered with (%+v) ...", orderRequest))
 	orderCommandProducer.Emit(CreateOrderCommand{
 		TimestampInMillis: time.Now().UnixNano() / int64(time.Millisecond),
 		Payload: OrderEventPayload{
