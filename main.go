@@ -1,9 +1,6 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/fdk-refarch-eda/order-service/order-command-service/adapter"
 	"github.com/fdk-refarch-eda/order-service/order-command-service/domain"
 	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/database"
@@ -21,5 +18,5 @@ func main() {
 		},
 	}
 
-	log.Fatal(http.ListenAndServe(":8080", api.Router()))
+	api.Serve()
 }

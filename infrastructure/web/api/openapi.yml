@@ -11,15 +11,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderRequest'
+              $ref: '#/components/schemas/CreateOrderRequest'
       responses:
         "201":
           description: "Created"
-
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderResponse'
 components:
   schemas:
     Address:
-      description: Address model
       properties:
         city:
           type: string
@@ -29,33 +31,52 @@ components:
           type: string
         street:
           type: string
-        zipCode:
+        zip_code:
           type: string
       type: object
-    OrderRequest:
-      description: OrderRequest model
+    CreateOrderRequest:
       properties:
-        customerID:
+        customer_id:
           type: string
-        destinationAddress:
+        destination_address:
           $ref: '#/components/schemas/Address'
-        expectedDeliveryDate:
+        expected_delivery_date:
           type: string
-        pickupAddress:
+        pickup_address:
           $ref: '#/components/schemas/Address'
-        pickupDate:
+        pickup_date:
           type: string
-        productID:
+        product_id:
           type: string
         quantity:
           format: int64
           type: integer
       type: object
       example:
-        productID: "P02"
+        product_id: "P02"
         quantity: 101
-        customerID: "GoodManuf"
-        expectedDeliveryDate: "2019-01-10T13:30Z"
-        pickupDate: "2019-01-10T13:30Z"
-        pickupAddress: {"street": "200 1st street", "city": "Shanghai", "country": "China", "state": "", "zipcode": "09430"}
-        destinationAddress: {"street": "500 main street", "city": "San Leonardo", "country": "USA", "state": "CA", "zipcode": "95030"}
+        customer_id: "GoodManuf"
+        expected_delivery_date: "2019-01-10T13:30Z"
+        pickup_date: "2019-01-10T13:30Z"
+        pickup_address: {"street": "200 1st street", "city": "Shanghai", "country": "China", "state": "", "zip_code": "09430"}
+        destination_address: {"street": "500 main street", "city": "San Leonardo", "country": "USA", "state": "CA", "zip_code": "95030"}
+    CreateOrderResponse:
+      properties:
+        customer_id:
+          type: string
+        destination_address:
+          $ref: '#/components/schemas/Address'
+        expected_delivery_date:
+          type: string
+        order_id:
+          type: string
+        pickup_address:
+          $ref: '#/components/schemas/Address'
+        pickup_date:
+          type: string
+        product_id:
+          type: string
+        quantity:
+          format: int64
+          type: integer
+      type: object

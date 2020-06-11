@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,8 +12,8 @@ type OrderAPI struct {
 	Handler *OrderHandler
 }
 
-// Router func
-func (api OrderAPI) Router() *mux.Router {
+// Serve func
+func (api OrderAPI) Serve() {
 	router := mux.NewRouter()
 
 	router.Methods("GET").Path("/").Handler(http.RedirectHandler("/swagger-ui/", http.StatusPermanentRedirect))
@@ -22,5 +23,5 @@ func (api OrderAPI) Router() *mux.Router {
 	router.Methods("POST").Path("/orders").HandlerFunc(api.Handler.CreateOrder)
 	router.Methods("PUT").Path("/orders/{id}").HandlerFunc(api.Handler.UpdateOrder)
 
-	return router
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
