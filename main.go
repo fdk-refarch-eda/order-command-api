@@ -4,18 +4,22 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/fdk-refarch-eda/order-service/order-command-service/adapter"
+	"github.com/fdk-refarch-eda/order-service/order-command-service/domain"
+	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/database"
+	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/web"
 )
 
 func main() {
-	router := mux.NewRouter()
+	api := &web.OrderAPI{
+		Handler: &web.OrderHandler{
+			Adapter: &adapter.OrderHandler{
+				Service: &domain.ShippingOrderService{
+					Repository: &database.InMemoryShippingOrderRepository{},
+				},
+			},
+		},
+	}
 
-	router.Methods("GET").Path("/").Handler(http.RedirectHandler("/swagger-ui/", http.StatusPermanentRedirect))
-	router.PathPrefix("/api-docs/").Handler(http.StripPrefix("/api-docs/", http.FileServer(http.Dir("./api/"))))
-	router.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./web/swagger-ui/"))))
-
-	router.Methods("POST").Path("/orders").HandlerFunc(CreateOrder)
-	router.Methods("PUT").Path("/orders/{id}").HandlerFunc(UpdateOrder)
-
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", api.Router()))
 }
