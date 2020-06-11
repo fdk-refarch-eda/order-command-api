@@ -7,11 +7,11 @@ type ShippingOrderService struct {
 
 // ShippingOrderRepository interface
 type ShippingOrderRepository interface {
-	save(order *ShippingOrder)
+	Save(order *ShippingOrder)
 }
 
 // CreateOrder func
 func (orderService ShippingOrderService) CreateOrder(order *ShippingOrder) {
 	// TODO validation
-	orderService.Repository.save(order)
+	orderService.Repository.Save(order)
 }

@@ -6,13 +6,12 @@ import (
 )
 
 // InMemoryShippingOrderRepository type
-type InMemoryShippingOrderRepository struct {
-	domain.ShippingOrderRepository
-}
+type InMemoryShippingOrderRepository struct{}
 
 var store map[string]*domain.ShippingOrder = make(map[string]*domain.ShippingOrder)
 
-func (repo InMemoryShippingOrderRepository) save(order *domain.ShippingOrder) {
+// Save func
+func (repo InMemoryShippingOrderRepository) Save(order *domain.ShippingOrder) {
 	order.OrderID = uuid.New().String()
 	store[order.OrderID] = order
 }
