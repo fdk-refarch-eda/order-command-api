@@ -20,10 +20,15 @@ func (orderHandler OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Requ
 	var createOrderRequest adapter.CreateOrderRequest
 	json.NewDecoder(r.Body).Decode(&createOrderRequest)
 
-	createOrderResponse := orderHandler.Adapter.CreateOrder(createOrderRequest)
+	createOrderResponse, err := orderHandler.Adapter.CreateOrder(createOrderRequest)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(createOrderResponse)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err)
+	} else {
+		json.NewEncoder(w).Encode(createOrderResponse)
+	}
 }
 
 // UpdateOrder Handler

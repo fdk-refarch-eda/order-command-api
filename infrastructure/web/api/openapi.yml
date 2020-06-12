@@ -13,12 +13,18 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateOrderRequest'
       responses:
-        "201":
-          description: "Created"
+        "200":
+          description: "OK"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateOrderResponse'
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     Address:
@@ -79,4 +85,15 @@ components:
         quantity:
           format: int64
           type: integer
+      type: object
+    ErrorResponse:
+      properties:
+        error:
+          type: array
+          $ref: '#/components/schemas/Error'
+      type: object
+    Error:
+      properties:
+        message:
+          type: string
       type: object
