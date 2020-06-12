@@ -12,6 +12,5 @@ type ShippingOrderRepository interface {
 
 // CreateOrder func
 func (orderService ShippingOrderService) CreateOrder(order *ShippingOrder) {
-	// TODO validation
 	orderService.Repository.Save(order)
 }
