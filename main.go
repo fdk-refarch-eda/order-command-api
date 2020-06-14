@@ -9,19 +9,35 @@ import (
 )
 
 func main() {
+	const orderCommandsTopicName = "order-commands"
+	const orderEventsTopicName = "orders"
+
 	commandListener := &event.SimpleEventBusListener{
+		Topic: orderCommandsTopicName,
 		Processor: &domain.OrderCommandProcessor{
 			Repository: &database.InMemoryShippingOrderRepository{},
+			OrderEventEmitter: &event.SimpleEventBusEmitter{
+				Topic: orderEventsTopicName,
+			},
 		},
 	}
 
 	commandListener.Listen()
 
+	orderEventListener := &event.SimpleEventBusListener{
+		Topic:     orderEventsTopicName,
+		Processor: &domain.OrderEventProcessor{},
+	}
+
+	orderEventListener.Listen()
+
 	api := &web.OrderAPI{
 		Handler: &web.OrderHandler{
 			Adapter: &adapter.OrderHandler{
 				Service: &domain.ShippingOrderService{
-					CommandEmitter: &event.SimpleEventBusEmitter{},
+					CommandEmitter: &event.SimpleEventBusEmitter{
+						Topic: orderCommandsTopicName,
+					},
 				},
 			},
 		},

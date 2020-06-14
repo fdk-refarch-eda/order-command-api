@@ -12,20 +12,23 @@ import (
 var eventBus EventBus.Bus = EventBus.New()
 
 // SimpleEventBusEmitter type
-type SimpleEventBusEmitter struct{}
+type SimpleEventBusEmitter struct {
+	Topic string
+}
 
 // Emit Func
 func (emitter SimpleEventBusEmitter) Emit(event interface{}) {
-	log.Println(fmt.Sprintf("Emitting %s: %+v", reflect.TypeOf(event), event))
-	eventBus.Publish("order-commands", event)
+	log.Println(fmt.Sprintf("Emitting %s: %+v to topic: %s", reflect.TypeOf(event), event, emitter.Topic))
+	eventBus.Publish(emitter.Topic, event)
 }
 
 // SimpleEventBusListener type
 type SimpleEventBusListener struct {
+	Topic     string
 	Processor domain.EventProcessor
 }
 
 // Listen func
 func (listener SimpleEventBusListener) Listen() {
-	eventBus.Subscribe("order-commands", listener.Processor.Process)
+	eventBus.Subscribe(listener.Topic, listener.Processor.Process)
 }
