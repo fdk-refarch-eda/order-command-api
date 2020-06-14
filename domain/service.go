@@ -9,11 +9,11 @@ type ShippingOrderService struct {
 
 // ShippingOrderRepository interface
 type ShippingOrderRepository interface {
-	Save(order *ShippingOrder)
+	Save(order ShippingOrder)
 }
 
 // CreateOrder func
 func (orderService ShippingOrderService) CreateOrder(command *CreateOrderCommand) {
 	command.OrderID = uuid.New().String()
-	orderService.CommandEmitter.Emit(command)
+	orderService.CommandEmitter.Emit(*command)
 }
