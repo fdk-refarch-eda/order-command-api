@@ -24,22 +24,23 @@ type CreateOrderCommand struct {
 	Status               string
 }
 
-// EventListener interface
-type EventListener interface {
-	Handle(event interface{})
+// EventProcessor interface
+type EventProcessor interface {
+	Process(event interface{})
 }
 
-// OrderCommandAgent type
-type OrderCommandAgent struct {
+// OrderCommandProcessor type
+type OrderCommandProcessor struct {
 	Repository ShippingOrderRepository
 }
 
-// Handle func
-func (agent OrderCommandAgent) Handle(event interface{}) {
+// Process func
+func (orderCommandProcessor OrderCommandProcessor) Process(event interface{}) {
 	switch event.(type) {
 	case CreateOrderCommand:
 		log.Println(fmt.Sprintf("Received CreateOrderCommand: %+v", event))
-		agent.Repository.Save(mapToShippingOrder(event.(CreateOrderCommand)))
+		shippingOrder := mapToShippingOrder(event.(CreateOrderCommand))
+		orderCommandProcessor.Repository.Save(shippingOrder)
 	default:
 		log.Println(fmt.Sprintf("Received unknown event (%s). Ignoring...", reflect.TypeOf(event)))
 	}

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	commandListener := &event.SimpleEventBusListener{
-		Listener: &domain.OrderCommandAgent{
+		Processor: &domain.OrderCommandProcessor{
 			Repository: &database.InMemoryShippingOrderRepository{},
 		},
 	}

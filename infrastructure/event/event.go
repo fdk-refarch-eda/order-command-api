@@ -22,10 +22,10 @@ func (emitter SimpleEventBusEmitter) Emit(event interface{}) {
 
 // SimpleEventBusListener type
 type SimpleEventBusListener struct {
-	Listener domain.EventListener
+	Processor domain.EventProcessor
 }
 
 // Listen func
-func (c SimpleEventBusListener) Listen() {
-	eventBus.Subscribe("order-commands", c.Listener.Handle)
+func (listener SimpleEventBusListener) Listen() {
+	eventBus.Subscribe("order-commands", listener.Processor.Process)
 }
