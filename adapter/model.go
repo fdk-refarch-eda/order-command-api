@@ -63,20 +63,19 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-func toShippingOrder(createOrderRequest CreateOrderRequest) domain.ShippingOrder {
-	return domain.ShippingOrder{
+func mapToCreateOrderCommand(createOrderRequest CreateOrderRequest) domain.CreateOrderCommand {
+	return domain.CreateOrderCommand{
 		ProductID:            createOrderRequest.ProductID,
 		CustomerID:           createOrderRequest.CustomerID,
 		Quantity:             createOrderRequest.Quantity,
-		PickupAddress:        toDomainAddress(createOrderRequest.PickupAddress),
+		PickupAddress:        mapToDomainAddress(createOrderRequest.PickupAddress),
 		PickupDate:           createOrderRequest.PickupDate,
-		DestinationAddress:   toDomainAddress(createOrderRequest.DestinationAddress),
+		DestinationAddress:   mapToDomainAddress(createOrderRequest.DestinationAddress),
 		ExpectedDeliveryDate: createOrderRequest.ExpectedDeliveryDate,
-		Status:               "to-be-created",
 	}
 }
 
-func toDomainAddress(address Address) domain.Address {
+func mapToDomainAddress(address Address) domain.Address {
 	return domain.Address{
 		Street:  address.Street,
 		City:    address.City,
@@ -86,7 +85,7 @@ func toDomainAddress(address Address) domain.Address {
 	}
 }
 
-func toAddress(address domain.Address) Address {
+func mapToAddress(address domain.Address) Address {
 	return Address{
 		Street:  address.Street,
 		City:    address.City,
@@ -96,15 +95,15 @@ func toAddress(address domain.Address) Address {
 	}
 }
 
-func toCreateOrderResponse(order domain.ShippingOrder) CreateOrderResponse {
+func mapToCreateOrderResponse(command domain.CreateOrderCommand) CreateOrderResponse {
 	return CreateOrderResponse{
-		OrderID:              order.OrderID,
-		CustomerID:           order.CustomerID,
-		ProductID:            order.ProductID,
-		Quantity:             order.Quantity,
-		ExpectedDeliveryDate: order.ExpectedDeliveryDate,
-		PickupDate:           order.PickupDate,
-		PickupAddress:        toAddress(order.PickupAddress),
-		DestinationAddress:   toAddress(order.DestinationAddress),
+		OrderID:              command.OrderID,
+		CustomerID:           command.CustomerID,
+		ProductID:            command.ProductID,
+		Quantity:             command.Quantity,
+		ExpectedDeliveryDate: command.ExpectedDeliveryDate,
+		PickupDate:           command.PickupDate,
+		PickupAddress:        mapToAddress(command.PickupAddress),
+		DestinationAddress:   mapToAddress(command.DestinationAddress),
 	}
 }

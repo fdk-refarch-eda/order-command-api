@@ -26,9 +26,9 @@ func (orderHandler OrderHandler) CreateOrder(createOrderRequest CreateOrderReque
 		return CreateOrderResponse{}, &ErrorResponse{Errors: errors}
 	}
 
-	order := toShippingOrder(createOrderRequest)
-	orderHandler.Service.CreateOrder(&order)
-	return toCreateOrderResponse(order), nil
+	command := mapToCreateOrderCommand(createOrderRequest)
+	orderHandler.Service.CreateOrder(&command)
+	return mapToCreateOrderResponse(command), nil
 }
 
 // UpdateOrder handler
