@@ -19,7 +19,7 @@ type SimpleEventBusEmitter struct {
 // Emit Func
 func (emitter SimpleEventBusEmitter) Emit(event interface{}) {
 	log.Println(fmt.Sprintf("Emitting %s: %+v to topic: %s", reflect.TypeOf(event), event, emitter.Topic))
-	eventBus.Publish(emitter.Topic, event)
+	go eventBus.Publish(emitter.Topic, event)
 }
 
 // SimpleEventBusListener type

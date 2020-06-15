@@ -68,7 +68,7 @@ func (orderCommandProcessor OrderCommandProcessor) Process(event interface{}) {
 		shippingOrder := mapToShippingOrder(createOrderCommand)
 		orderCommandProcessor.Repository.Save(shippingOrder)
 		orderCreatedEvent := newOrderCreatedEvent(shippingOrder)
-		go orderCommandProcessor.OrderEventEmitter.Emit(orderCreatedEvent)
+		orderCommandProcessor.OrderEventEmitter.Emit(orderCreatedEvent)
 	default:
 		log.Println(fmt.Sprintf("Received unknown event (%s). Ignoring...", reflect.TypeOf(event)))
 	}
