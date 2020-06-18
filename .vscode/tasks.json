@@ -11,7 +11,7 @@
     {
       "label": "minikube-skaffold-dev",
       "type": "shell",
-      "command": "source <(minikube docker-env -p refarch-eda); skaffold dev --port-forward"
+      "command": "source <(minikube docker-env); skaffold dev --port-forward"
     }
   ]
 }

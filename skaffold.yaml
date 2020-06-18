@@ -6,7 +6,9 @@ build:
   artifacts:
   - image: order-command-service
 deploy:
-  kubectl:
-    manifests:
-    - k8s/deployment.yaml
-    - k8s/service.yaml
+  helm:
+    releases:
+    - name: order-command-service
+      chartPath: helm
+      artifactOverrides:
+        image.repository: order-command-service
