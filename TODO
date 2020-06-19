@@ -1,2 +1,3 @@
+☐ db error handling
 ☐ go-swagger integration
 ☐ dependency injection to keep fields unexported
