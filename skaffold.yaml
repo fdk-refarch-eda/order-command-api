@@ -8,6 +8,9 @@ build:
 deploy:
   helm:
     releases:
+    - name: kafka
+      chartPath: bitnami/kafka
+      remote: true
     - name: order-command-service
       chartPath: helm
       artifactOverrides:

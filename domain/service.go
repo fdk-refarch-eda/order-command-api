@@ -9,7 +9,7 @@ type ShippingOrderService struct {
 
 // ShippingOrderRepository interface
 type ShippingOrderRepository interface {
-	Save(order ShippingOrder)
+	Save(order ShippingOrder) error
 }
 
 // CreateOrder func

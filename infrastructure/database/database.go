@@ -68,9 +68,9 @@ func createSchema(db *pg.DB) error {
 }
 
 // Save func
-func (repo postgresqlShippingOrderRepository) Save(order domain.ShippingOrder) {
+func (repo postgresqlShippingOrderRepository) Save(order domain.ShippingOrder) error {
 	log.Println(fmt.Sprintf("Storing order: %+v", order))
-	repo.db.Insert(&order)
+	return repo.db.Insert(&order)
 }
 
 // Close func
