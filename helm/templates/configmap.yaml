@@ -7,3 +7,5 @@ data:
   PG_ADDRESS: "order-command-service-postgresql:5432"
   PG_USERNAME: "postgres"
   PG_DATABASE: "postgres"
+  TOPICS_ORDERCOMMANDS: "order-commands"
+  TOPICS_ORDEREVENTS: "orders"

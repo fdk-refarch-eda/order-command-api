@@ -35,7 +35,7 @@ type PostgresqlConfig struct {
 }
 
 // NewPostgresqlShippingOrderRepository func
-func NewPostgresqlShippingOrderRepository(config *PostgresqlConfig) *postgresqlShippingOrderRepository {
+func NewPostgresqlShippingOrderRepository(config PostgresqlConfig) *postgresqlShippingOrderRepository {
 	db := pg.Connect(&pg.Options{
 		Addr:     config.Address,
 		User:     config.Username,
