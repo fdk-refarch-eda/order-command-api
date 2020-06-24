@@ -15,3 +15,5 @@ deploy:
       chartPath: helm
       artifactOverrides:
         image.repository: order-command-service
+      setValues:
+        postgresql.postgresqlPassword: secret
