@@ -6,9 +6,14 @@ import (
 	"reflect"
 )
 
+// Event interface
+type Event interface {
+	ID() string
+}
+
 // EventEmitter interface
 type EventEmitter interface {
-	Emit(event interface{})
+	Emit(event Event)
 }
 
 // CreateOrderCommand model
@@ -23,6 +28,11 @@ type CreateOrderCommand struct {
 	DestinationAddress   Address
 }
 
+// ID func
+func (c CreateOrderCommand) ID() string {
+	return c.OrderID
+}
+
 // OrderCreatedEvent model
 type OrderCreatedEvent struct {
 	OrderID              string
@@ -33,6 +43,11 @@ type OrderCreatedEvent struct {
 	PickupDate           string
 	PickupAddress        Address
 	DestinationAddress   Address
+}
+
+// ID func
+func (e OrderCreatedEvent) ID() string {
+	return e.OrderID
 }
 
 func newOrderCreatedEvent(order ShippingOrder) OrderCreatedEvent {

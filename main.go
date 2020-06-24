@@ -19,11 +19,11 @@ func main() {
 	defer postgresqlOrderRepo.Close()
 
 	commandListener := &event.SimpleEventBusListener{
-		Topic: config.TopicNames.OrderCommands,
+		Topic: config.Topics.OrderCommands,
 		Processor: &domain.OrderCommandProcessor{
 			Repository: postgresqlOrderRepo,
 			OrderEventEmitter: &event.SimpleEventBusEmitter{
-				Topic: config.TopicNames.OrderEvents,
+				Topic: config.Topics.OrderEvents,
 			},
 		},
 	}
@@ -31,19 +31,23 @@ func main() {
 	commandListener.Listen()
 
 	orderEventListener := &event.SimpleEventBusListener{
-		Topic:     config.TopicNames.OrderEvents,
+		Topic:     config.Topics.OrderEvents,
 		Processor: &domain.OrderEventProcessor{},
 	}
 
 	orderEventListener.Listen()
 
+	kafkaProducer := event.NewKafkaProducer(
+		config.Topics.OrderCommands,
+		config.Kafka.OrderCommandProducerProperties,
+	)
+	defer kafkaProducer.Close()
+
 	api := &web.OrderAPI{
 		Handler: &web.OrderHandler{
 			Adapter: &adapter.OrderHandler{
 				Service: &domain.ShippingOrderService{
-					CommandEmitter: &event.SimpleEventBusEmitter{
-						Topic: config.TopicNames.OrderCommands,
-					},
+					CommandEmitter: kafkaProducer,
 				},
 			},
 		},

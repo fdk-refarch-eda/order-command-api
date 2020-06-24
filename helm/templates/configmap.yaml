@@ -4,8 +4,15 @@ metadata:
   name: order-command-service
   namespace: default
 data:
-  PG_ADDRESS: "order-command-service-postgresql:5432"
-  PG_USERNAME: "postgres"
-  PG_DATABASE: "postgres"
-  TOPICS_ORDERCOMMANDS: "order-commands"
-  TOPICS_ORDEREVENTS: "orders"
+  config.yaml: |
+    topics:
+      orderCommands: order-commands
+      orderEvents: orders
+    postgresqlConfig:
+      address: order-command-service-postgresql:5432
+      username: postgres
+      password: $PG_PASSWORD
+      database: postgres
+    kafka:
+      OrderCommandProducerProperties:
+        bootstrap.servers: kafka:9092

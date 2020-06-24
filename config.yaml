@@ -1,0 +1,11 @@
+topics:
+  orderCommands: order-commands
+  orderEvents: orders
+postgresqlConfig:
+  address: localhost:5432
+  username: postgres
+  password: geheim
+  database: postgres
+kafka:
+  OrderCommandProducerProperties:
+    bootstrap.servers: localhost:9092

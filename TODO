@@ -1,4 +1,5 @@
 ☐ db error handling
+☐ kafka error handling
 ☐ go-swagger integration
 ☐ dependency injection to keep fields unexported
 ☐ better structured logging with levels and stuff => zerolog

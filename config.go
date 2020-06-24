@@ -1,7 +1,7 @@
 package main
 
 import (
-	"strings"
+	"log"
 
 	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/database"
 	"github.com/spf13/viper"
@@ -9,8 +9,9 @@ import (
 
 // Config type
 type config struct {
-	TopicNames       Topics
+	Topics           Topics
 	PostgresqlConfig database.PostgresqlConfig
+	Kafka            KafkaConfig
 }
 
 // Topics type
@@ -19,45 +20,31 @@ type Topics struct {
 	OrderEvents   string
 }
 
+// KafkaConfig type
+type KafkaConfig struct {
+	OrderCommandProducerProperties KafkaProperties
+}
+
+// KafkaProperties type
+type KafkaProperties map[string]interface{}
+
 // NewConfig ctor
 func NewConfig() config {
-	return config{
-		TopicNames:       bindTopicNames(),
-		PostgresqlConfig: bindPostgresqlConfig(),
-	}
-}
+	c := config{}
 
-func bindTopicNames() Topics {
-	topics := &Topics{
-		OrderCommands: "order-commands",
-		OrderEvents:   "orders",
-	}
+	v := viper.NewWithOptions(viper.KeyDelimiter("#"))
+	v.SetConfigName("config")
+	v.SetConfigType("yaml")
+	v.AddConfigPath(".")
+	v.BindEnv("PostgresqlConfig#Password", "PG_PASSWORD")
 
-	v := viper.New()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	v.SetEnvPrefix("topics")
-	v.BindEnv("OrderCommands")
-	v.BindEnv("OrderEvents")
-	v.Unmarshal(topics)
-
-	return *topics
-}
-
-func bindPostgresqlConfig() database.PostgresqlConfig {
-	dbConfig := &database.PostgresqlConfig{
-		Address:  ":5432",
-		Username: "postgres",
-		Database: "postgres",
+	if err := v.ReadInConfig(); err != nil {
+		log.Fatal("Unable to read config file.", err)
 	}
 
-	v := viper.New()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	v.SetEnvPrefix("pg")
-	v.BindEnv("address")
-	v.BindEnv("username")
-	v.BindEnv("password")
-	v.BindEnv("database")
-	v.Unmarshal(dbConfig)
+	if err := v.Unmarshal(&c); err != nil {
+		log.Fatal("Unable to unmarshal config.", err)
+	}
 
-	return *dbConfig
+	return c
 }

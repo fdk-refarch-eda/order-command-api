@@ -41,15 +41,17 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          envFrom:
-          - configMapRef:
-              name: order-command-service
           env:
             - name: PG_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: order-command-service-postgresql
                   key: postgresql-password
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -62,3 +64,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: order-command-service
+
