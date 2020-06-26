@@ -1,0 +1,29 @@
+syntax = "proto3";
+package order.command;
+
+option go_package = "adapter/proto";
+
+message OrderCommand {
+  oneof payload {
+    CreateOrderCommand create = 1;
+  }
+}
+
+message CreateOrderCommand {
+  string OrderID = 1;
+  string CustomerID = 2;
+  string ProductID = 3;
+  uint32 Quantity = 4;
+  string ExpectedDeliveryDate = 5;
+  string PickupDate = 6;
+  Address PickupAddress = 7;
+  Address DestinationAddress = 8;
+}
+
+message Address {
+  string Street = 1;
+	string City = 2;
+	string Country = 3;
+	string State = 4;
+	string ZipCode = 5;
+}

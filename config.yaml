@@ -9,3 +9,12 @@ postgresqlConfig:
 kafka:
   OrderCommandProducerProperties:
     bootstrap.servers: localhost:9092
+    acks: all
+    enable.idempotence: true
+  OrderCommandConsumerProperties:
+    bootstrap.servers: localhost:9092
+    group.id: order-command-consumer-group
+    client.id: order-command-consumer
+    enable.auto.commit: false
+    auto.offset.reset: earliest
+    isolation.level: read_committed

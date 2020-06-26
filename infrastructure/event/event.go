@@ -1,7 +1,6 @@
 package event
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"reflect"
@@ -36,25 +35,31 @@ func (listener SimpleEventBusListener) Listen() {
 }
 
 type kafkaProducer struct {
-	topic    string
-	delegate *kafka.Producer
+	topic      string
+	delegate   *kafka.Producer
+	serializer func(event domain.Event) ([]byte, error)
 }
 
 // NewKafkaProducer ctor
-func NewKafkaProducer(topic string, config map[string]interface{}) *kafkaProducer {
+func NewKafkaProducer(
+	topic string,
+	config map[string]interface{},
+	serializer func(event domain.Event) ([]byte, error),
+) *kafkaProducer {
 	producer, err := kafka.NewProducer(toKafkaConfig(config))
 	if err != nil {
 		log.Fatal("Error while trying to create kafka producer", err)
 	}
 
 	return &kafkaProducer{
-		topic:    topic,
-		delegate: producer,
+		topic:      topic,
+		delegate:   producer,
+		serializer: serializer,
 	}
 }
 
 func (producer kafkaProducer) Emit(event domain.Event) {
-	payload, err := json.Marshal(event)
+	payload, err := producer.serializer(event)
 	if err == nil {
 		producer.delegate.Produce(&kafka.Message{
 			TopicPartition: kafka.TopicPartition{
@@ -64,11 +69,62 @@ func (producer kafkaProducer) Emit(event domain.Event) {
 			Key:   []byte(event.ID()),
 			Value: payload,
 		}, nil)
+	} else {
+		log.Println("Error while trying to marshal event", event, err)
 	}
 }
 
 func (producer kafkaProducer) Close() {
 	producer.delegate.Close()
+}
+
+type kafkaConsumer struct {
+	topic        string
+	delegate     *kafka.Consumer
+	processor    domain.EventProcessor
+	deserializer func(data []byte) (domain.Event, error)
+}
+
+// NewKafkaConsumer ctor
+func NewKafkaConsumer(
+	topic string,
+	config map[string]interface{},
+	processor domain.EventProcessor,
+	deserializer func(data []byte) (domain.Event, error),
+) *kafkaConsumer {
+	consumer, err := kafka.NewConsumer(toKafkaConfig(config))
+	if err != nil {
+		log.Fatal("Error while trying to create kafka consumer", err)
+	}
+
+	return &kafkaConsumer{
+		topic:        topic,
+		delegate:     consumer,
+		processor:    processor,
+		deserializer: deserializer,
+	}
+}
+
+func (consumer kafkaConsumer) Start() {
+	if err := consumer.delegate.Subscribe(consumer.topic, nil); err != nil {
+		log.Fatal("Error while trying to subscribe to topic", consumer.topic, err)
+	}
+
+	for {
+		msg, err := consumer.delegate.ReadMessage(-1)
+		if err == nil {
+			if event, err := consumer.deserializer(msg.Value); err == nil {
+				consumer.processor.Process(event)
+			} else {
+				log.Println("Error while trying to unmarshal", msg.Value, err)
+			}
+		} else {
+			log.Fatal("Error while trying to read messags from topic", consumer.topic, err)
+			break
+		}
+	}
+
+	consumer.delegate.Close()
 }
 
 func toKafkaConfig(config map[string]interface{}) *kafka.ConfigMap {

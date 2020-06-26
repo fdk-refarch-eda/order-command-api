@@ -5,6 +5,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/fdk-refarch-eda/order-service/order-command-service/adapter"
+	"github.com/fdk-refarch-eda/order-service/order-command-service/adapter/proto"
 	"github.com/fdk-refarch-eda/order-service/order-command-service/domain"
 	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/database"
 	"github.com/fdk-refarch-eda/order-service/order-command-service/infrastructure/event"
@@ -13,22 +14,24 @@ import (
 
 func main() {
 	config := NewConfig()
-	log.Println(spew.Sprintf("Working with config: %+v", config))
+	log.Println("Working with config:", spew.Sdump(config))
 
 	postgresqlOrderRepo := database.NewPostgresqlShippingOrderRepository(config.PostgresqlConfig)
 	defer postgresqlOrderRepo.Close()
 
-	commandListener := &event.SimpleEventBusListener{
-		Topic: config.Topics.OrderCommands,
-		Processor: &domain.OrderCommandProcessor{
+	commandConsumer := event.NewKafkaConsumer(
+		config.Topics.OrderCommands,
+		config.Kafka.OrderCommandConsumerProperties,
+		&domain.OrderCommandProcessor{
 			Repository: postgresqlOrderRepo,
 			OrderEventEmitter: &event.SimpleEventBusEmitter{
 				Topic: config.Topics.OrderEvents,
 			},
 		},
-	}
+		proto.UnmarshalOrderCommand,
+	)
 
-	commandListener.Listen()
+	go commandConsumer.Start()
 
 	orderEventListener := &event.SimpleEventBusListener{
 		Topic:     config.Topics.OrderEvents,
@@ -40,6 +43,7 @@ func main() {
 	kafkaProducer := event.NewKafkaProducer(
 		config.Topics.OrderCommands,
 		config.Kafka.OrderCommandProducerProperties,
+		proto.MarshalOrderCommand,
 	)
 	defer kafkaProducer.Close()
 
