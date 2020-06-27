@@ -1,21 +1,29 @@
 package proto
 
 import (
+	"errors"
+
 	"github.com/fdk-refarch-eda/order-service/order-command-service/domain"
 	"github.com/golang/protobuf/proto"
 )
 
 // MarshalOrderCommand func
 func MarshalOrderCommand(event domain.Event) ([]byte, error) {
-	return proto.Marshal(toProto(event))
+	command, err := toProto(event)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return proto.Marshal(command)
 }
 
-func toProto(event domain.Event) *OrderCommand {
+func toProto(event domain.Event) (*OrderCommand, error) {
 	switch event.(type) {
 	case domain.CreateOrderCommand:
-		return toProtoCreate(event.(domain.CreateOrderCommand))
+		return toProtoCreate(event.(domain.CreateOrderCommand)), nil
 	default:
-		return nil
+		return nil, errors.New("Received unknown event type. Don't know how to convert to proto")
 	}
 }
 
@@ -55,15 +63,15 @@ func UnmarshalOrderCommand(data []byte) (domain.Event, error) {
 		return nil, err
 	}
 
-	return fromProto(orderCommand), nil
+	return fromProto(orderCommand)
 }
 
-func fromProto(command *OrderCommand) domain.Event {
+func fromProto(command *OrderCommand) (domain.Event, error) {
 	switch command.Payload.(type) {
 	case *OrderCommand_Create:
-		return fromProtoCreate(command.GetCreate())
+		return fromProtoCreate(command.GetCreate()), nil
 	default:
-		return nil
+		return nil, errors.New("Received unknown command type. Don't know how to convert from proto")
 	}
 }
 

@@ -65,7 +65,7 @@ func newOrderCreatedEvent(order ShippingOrder) OrderCreatedEvent {
 
 // EventProcessor interface
 type EventProcessor interface {
-	Process(event interface{})
+	Process(event Event)
 }
 
 // OrderCommandProcessor type
@@ -75,7 +75,7 @@ type OrderCommandProcessor struct {
 }
 
 // Process func
-func (orderCommandProcessor OrderCommandProcessor) Process(event interface{}) {
+func (orderCommandProcessor OrderCommandProcessor) Process(event Event) {
 	switch event.(type) {
 	case CreateOrderCommand:
 		log.Println(fmt.Sprintf("Received CreateOrderCommand: %+v", event))
@@ -93,7 +93,7 @@ func (orderCommandProcessor OrderCommandProcessor) Process(event interface{}) {
 type OrderEventProcessor struct{}
 
 // Process func
-func (orderEventProcessor OrderEventProcessor) Process(event interface{}) {
+func (orderEventProcessor OrderEventProcessor) Process(event Event) {
 	switch event.(type) {
 	case OrderCreatedEvent:
 		log.Println(fmt.Sprintf("Received OrderCreatedEvent: %+v", event))
