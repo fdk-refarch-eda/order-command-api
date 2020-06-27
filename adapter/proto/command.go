@@ -8,32 +8,32 @@ import (
 )
 
 // MarshalOrderCommand func
-func MarshalOrderCommand(event domain.Event) ([]byte, error) {
-	command, err := toProto(event)
+func MarshalOrderCommand(command domain.Event) ([]byte, error) {
+	protoCommand, err := toProtoCommand(command)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return proto.Marshal(command)
+	return proto.Marshal(protoCommand)
 }
 
-func toProto(event domain.Event) (*OrderCommand, error) {
-	switch event.(type) {
+func toProtoCommand(command domain.Event) (*Command, error) {
+	switch command.(type) {
 	case domain.CreateOrderCommand:
-		return toProtoCreate(event.(domain.CreateOrderCommand)), nil
+		return toProtoCreateOrderCommand(command.(domain.CreateOrderCommand)), nil
 	default:
 		return nil, errors.New("Received unknown event type. Don't know how to convert to proto")
 	}
 }
 
-func toProtoCreate(command domain.CreateOrderCommand) *OrderCommand {
-	return &OrderCommand{
-		Payload: &OrderCommand_Create{
-			Create: &CreateOrderCommand{
-				OrderID:              command.OrderID,
-				CustomerID:           command.CustomerID,
-				ProductID:            command.ProductID,
+func toProtoCreateOrderCommand(command domain.CreateOrderCommand) *Command {
+	return &Command{
+		Command: &Command_CreateOrderCommand{
+			CreateOrderCommand: &CreateOrderCommand{
+				OrderId:              command.OrderID,
+				CustomerId:           command.CustomerID,
+				ProductId:            command.ProductID,
 				Quantity:             uint32(command.Quantity),
 				ExpectedDeliveryDate: command.ExpectedDeliveryDate,
 				PickupDate:           command.PickupDate,
@@ -56,30 +56,30 @@ func toProtoAddress(address domain.Address) *Address {
 
 // UnmarshalOrderCommand func
 func UnmarshalOrderCommand(data []byte) (domain.Event, error) {
-	orderCommand := &OrderCommand{}
-	err := proto.Unmarshal(data, orderCommand)
+	command := &Command{}
+	err := proto.Unmarshal(data, command)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return fromProto(orderCommand)
+	return fromProtoCommand(command)
 }
 
-func fromProto(command *OrderCommand) (domain.Event, error) {
-	switch command.Payload.(type) {
-	case *OrderCommand_Create:
-		return fromProtoCreate(command.GetCreate()), nil
+func fromProtoCommand(command *Command) (domain.Event, error) {
+	switch command.Command.(type) {
+	case *Command_CreateOrderCommand:
+		return fromProtoCreateOrderCommand(command.GetCreateOrderCommand()), nil
 	default:
 		return nil, errors.New("Received unknown command type. Don't know how to convert from proto")
 	}
 }
 
-func fromProtoCreate(command *CreateOrderCommand) domain.CreateOrderCommand {
+func fromProtoCreateOrderCommand(command *CreateOrderCommand) domain.CreateOrderCommand {
 	return domain.CreateOrderCommand{
-		OrderID:              command.OrderID,
-		CustomerID:           command.CustomerID,
-		ProductID:            command.ProductID,
+		OrderID:              command.OrderId,
+		CustomerID:           command.CustomerId,
+		ProductID:            command.ProductId,
 		Quantity:             int(command.Quantity),
 		ExpectedDeliveryDate: command.ExpectedDeliveryDate,
 		PickupDate:           command.PickupDate,
