@@ -4,11 +4,12 @@ topics:
 postgresqlConfig:
   address: localhost:5432
   username: postgres
-  password: geheim
+  password: pw
   database: postgres
 kafka:
   OrderCommandProducerProperties:
     bootstrap.servers: localhost:9092
+    client.id: order-command-producer
     acks: all
     enable.idempotence: true
   OrderCommandConsumerProperties:
@@ -16,5 +17,18 @@ kafka:
     group.id: order-command-consumer-group
     client.id: order-command-consumer
     enable.auto.commit: false
+    auto.offset.reset: earliest
+    isolation.level: read_committed
+  OrderEventProducerProperties:
+    bootstrap.servers: localhost:9092
+    client.id: order-event-producer
+    acks: all
+    enable.idempotence: true
+    transactional.id: order-events-1
+  OrderEventConsumerProperties:
+    bootstrap.servers: localhost:9092
+    group.id: order-event-consumer-group
+    client.id: order-event-consumer
+    enable.auto.commit: true
     auto.offset.reset: earliest
     isolation.level: read_committed

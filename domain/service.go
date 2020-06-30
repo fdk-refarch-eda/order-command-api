@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // ShippingOrderService type
 type ShippingOrderService struct {
@@ -15,5 +17,5 @@ type ShippingOrderRepository interface {
 // CreateOrder func
 func (orderService ShippingOrderService) CreateOrder(command *CreateOrderCommand) {
 	command.OrderID = uuid.New().String()
-	orderService.CommandEmitter.Emit(*command)
+	orderService.CommandEmitter.Emit(nil, *command)
 }

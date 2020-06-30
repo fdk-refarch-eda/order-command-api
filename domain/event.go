@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -13,7 +14,7 @@ type Event interface {
 
 // EventEmitter interface
 type EventEmitter interface {
-	Emit(event Event)
+	Emit(ctx context.Context, event Event)
 }
 
 // CreateOrderCommand model
@@ -65,7 +66,7 @@ func newOrderCreatedEvent(order ShippingOrder) OrderCreatedEvent {
 
 // EventProcessor interface
 type EventProcessor interface {
-	Process(event Event)
+	Process(ctx context.Context, event Event)
 }
 
 // OrderCommandProcessor type
@@ -75,7 +76,7 @@ type OrderCommandProcessor struct {
 }
 
 // Process func
-func (orderCommandProcessor OrderCommandProcessor) Process(event Event) {
+func (orderCommandProcessor OrderCommandProcessor) Process(ctx context.Context, event Event) {
 	switch event.(type) {
 	case CreateOrderCommand:
 		log.Println(fmt.Sprintf("Received CreateOrderCommand: %+v", event))
@@ -83,7 +84,7 @@ func (orderCommandProcessor OrderCommandProcessor) Process(event Event) {
 		shippingOrder := mapToShippingOrder(createOrderCommand)
 		orderCommandProcessor.Repository.Save(shippingOrder)
 		orderCreatedEvent := newOrderCreatedEvent(shippingOrder)
-		orderCommandProcessor.OrderEventEmitter.Emit(orderCreatedEvent)
+		orderCommandProcessor.OrderEventEmitter.Emit(ctx, orderCreatedEvent)
 	default:
 		log.Println(fmt.Sprintf("Received unknown event (%s). Ignoring...", reflect.TypeOf(event)))
 	}
@@ -93,7 +94,7 @@ func (orderCommandProcessor OrderCommandProcessor) Process(event Event) {
 type OrderEventProcessor struct{}
 
 // Process func
-func (orderEventProcessor OrderEventProcessor) Process(event Event) {
+func (orderEventProcessor OrderEventProcessor) Process(ctx context.Context, event Event) {
 	switch event.(type) {
 	case OrderCreatedEvent:
 		log.Println(fmt.Sprintf("Received OrderCreatedEvent: %+v", event))

@@ -3,7 +3,6 @@ module github.com/fdk-refarch-eda/order-service/order-command-service
 go 1.14
 
 require (
-	github.com/asaskevich/EventBus v0.0.0-20200428142821-4fc0642a29f3
 	github.com/confluentinc/confluent-kafka-go v1.4.2
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-pg/pg v8.0.7+incompatible

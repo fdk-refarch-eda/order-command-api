@@ -9,7 +9,7 @@ import (
 
 // MarshalOrderEvent func
 func MarshalOrderEvent(event domain.Event) ([]byte, error) {
-	protoEvent, err := toProtoCommand(event)
+	protoEvent, err := toProtoOrder(event)
 
 	if err != nil {
 		return nil, err

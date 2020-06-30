@@ -24,6 +24,8 @@ type Topics struct {
 type KafkaConfig struct {
 	OrderCommandProducerProperties KafkaProperties
 	OrderCommandConsumerProperties KafkaProperties
+	OrderEventProducerProperties   KafkaProperties
+	OrderEventConsumerProperties   KafkaProperties
 }
 
 // KafkaProperties type
