@@ -3,6 +3,8 @@ package proto
 import (
 	"errors"
 
+	events "github.com/fdk-refarch-eda/golang-events"
+
 	"github.com/fdk-refarch-eda/order-service/order-command-service/domain"
 	"github.com/golang/protobuf/proto"
 )
@@ -18,7 +20,7 @@ func MarshalOrderCommand(command domain.Event) ([]byte, error) {
 	return proto.Marshal(protoCommand)
 }
 
-func toProtoCommand(command domain.Event) (*Command, error) {
+func toProtoCommand(command domain.Event) (*events.Command, error) {
 	switch command.(type) {
 	case domain.CreateOrderCommand:
 		return toProtoCreateOrderCommand(command.(domain.CreateOrderCommand)), nil
@@ -27,10 +29,10 @@ func toProtoCommand(command domain.Event) (*Command, error) {
 	}
 }
 
-func toProtoCreateOrderCommand(command domain.CreateOrderCommand) *Command {
-	return &Command{
-		Command: &Command_CreateOrderCommand{
-			CreateOrderCommand: &CreateOrderCommand{
+func toProtoCreateOrderCommand(command domain.CreateOrderCommand) *events.Command {
+	return &events.Command{
+		Command: &events.Command_CreateOrderCommand{
+			CreateOrderCommand: &events.CreateOrderCommand{
 				OrderId:              command.OrderID,
 				CustomerId:           command.CustomerID,
 				ProductId:            command.ProductID,
@@ -44,8 +46,8 @@ func toProtoCreateOrderCommand(command domain.CreateOrderCommand) *Command {
 	}
 }
 
-func toProtoAddress(address domain.Address) *Address {
-	return &Address{
+func toProtoAddress(address domain.Address) *events.Address {
+	return &events.Address{
 		Street:  address.Street,
 		City:    address.City,
 		Country: address.Country,
@@ -56,7 +58,7 @@ func toProtoAddress(address domain.Address) *Address {
 
 // UnmarshalOrderCommand func
 func UnmarshalOrderCommand(data []byte) (domain.Event, error) {
-	command := &Command{}
+	command := &events.Command{}
 	err := proto.Unmarshal(data, command)
 
 	if err != nil {
@@ -66,16 +68,16 @@ func UnmarshalOrderCommand(data []byte) (domain.Event, error) {
 	return fromProtoCommand(command)
 }
 
-func fromProtoCommand(command *Command) (domain.Event, error) {
+func fromProtoCommand(command *events.Command) (domain.Event, error) {
 	switch command.Command.(type) {
-	case *Command_CreateOrderCommand:
+	case *events.Command_CreateOrderCommand:
 		return fromProtoCreateOrderCommand(command.GetCreateOrderCommand()), nil
 	default:
 		return nil, errors.New("Received unknown command type. Don't know how to convert from proto")
 	}
 }
 
-func fromProtoCreateOrderCommand(command *CreateOrderCommand) domain.CreateOrderCommand {
+func fromProtoCreateOrderCommand(command *events.CreateOrderCommand) domain.CreateOrderCommand {
 	return domain.CreateOrderCommand{
 		OrderID:              command.OrderId,
 		CustomerID:           command.CustomerId,
@@ -88,7 +90,7 @@ func fromProtoCreateOrderCommand(command *CreateOrderCommand) domain.CreateOrder
 	}
 }
 
-func fromProtoAddress(address *Address) domain.Address {
+func fromProtoAddress(address *events.Address) domain.Address {
 	return domain.Address{
 		Street:  address.Street,
 		City:    address.City,
